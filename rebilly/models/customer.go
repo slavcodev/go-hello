@@ -24,11 +24,11 @@ type Customer struct {
 // Init repository type and interface
 // ************************************
 
-type Customers []Customer
+type Customers map[string]Customer
 
 // Method for add new customer to repository
 // Usage `interface{}` meaning any type here
-func (customers *Customers) Add(customer interface{}) (*Customers) {
+func (customers Customers) Add(customer interface{}) {
     // Check param type and cast to desired
     switch customer.(type) {
         case rebilly.Schema:
@@ -41,37 +41,39 @@ func (customers *Customers) Add(customer interface{}) (*Customers) {
                 if err != nil {
                     log.Fatal(err)
                 }
-                *customers = append(*customers, customerObj)
+                customers[customerObj.Id] = customerObj
             }
             break
         case Customer:
             if values, ok := customer.(Customer); ok {
-                *customers = append(*customers, values)
+                customers[values.Id] = values
             }
             break
         case *Customer:
             if values, ok := customer.(*Customer); ok {
-                *customers = append(*customers, *values)
+                customers[values.Id] = *values
             }
             break
         default:
             log.Fatal(errors.New("Invalid customer"))
     }
-
-    return customers
 }
 
 // Method for get repository items
-func (customers *Customers) GetAll() (Customers) {
-    return *customers
+func (customers *Customers) GetAll() ([]Customer) {
+    v := make([]Customer, 0, len(*customers))
+
+    for  _, value := range *customers {
+        v = append(v, value)
+    }
+
+    return v
 }
 
 // Method for get customer by ExternalId
-func (customers *Customers) GetById(id string) (*Customer) {
-    for _, customer := range *customers {
-        if customer.ExternalId.Id == id {
-            return &customer
-        }
+func (customers Customers) GetById(id string) (*Customer) {
+    if customer, ok := customers[id]; ok {
+        return &customer
     }
     return nil
 }

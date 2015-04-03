@@ -35,6 +35,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 // Function for loading fixtures
 func LoadTestData(ctr *controllers.CustomerController) {
+    ctr.Repository = make(models.Customers, 100)
     ctr.Repository.Add(rebilly.Schema{
         "ExternalId.Id":  {"A"},
         "Email":  {"user@mail.com"},
