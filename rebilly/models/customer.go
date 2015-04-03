@@ -27,10 +27,13 @@ type Customer struct {
 type Customers []Customer
 
 // Method for add new customer to repository
+// Usage `interface{}` meaning any type here
 func (customers *Customers) Add(customer interface{}) (*Customers) {
+    // Check param type and cast to desired
     switch customer.(type) {
         case rebilly.Schema:
             customerObj := Customer{}
+            // Cast `customer` var to type `rebilly.Schema`
             values, ok := customer.(rebilly.Schema)
             if ok {
                 decoder := schema.NewDecoder();
